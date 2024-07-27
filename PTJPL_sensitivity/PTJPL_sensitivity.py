@@ -8,7 +8,7 @@ from PTJPL import process_PTJPL
 
 import rasters as rt
 from SZA import UTC_to_solar, calculate_SZA_from_datetime
-from sentinel_tile_grid import sentinel_tile_grid
+from sentinel_tiles import sentinel_tile_grid
 
 from PTJPL.Topt import load_Topt
 from PTJPL.fAPARmax import load_fAPARmax
