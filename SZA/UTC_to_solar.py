@@ -33,7 +33,7 @@ def UTC_to_solar(time_UTC: datetime, lon: float) -> datetime:
     return time_UTC + timedelta(hours=(np.radians(lon) / np.pi * 12))
 
 
-def day_of_year(time_UTC: datetime, lon: Union[float, np.ndarray]) -> Union[float, np.ndarray]:
+def solar_day_of_year_for_longitude(time_UTC: datetime, lon: Union[float, np.ndarray]) -> Union[float, np.ndarray]:
     """
     Calculates the day of year based on the given UTC time and longitude.
 

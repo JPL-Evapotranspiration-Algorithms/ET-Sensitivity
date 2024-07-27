@@ -9,7 +9,7 @@ from BESS.FLiESANN import process_FLiES
 import rasters as rt
 from geos5fp import GEOS5FP
 from SZA import calculate_SZA_from_datetime
-from sentinel_tiles import sentinel_tile_grid
+from sentinel_tiles import sentinel_tiles
 from koppengeiger import load_koppen_geiger
 
 logger = logging.getLogger(__name__)
@@ -48,10 +48,10 @@ def generate_FLiES_inputs(
         time_UTC = parser.parse(str(time_UTC))
         doy.append(time_UTC.timetuple().tm_yday)
         date_UTC = time_UTC.date()
-        tile = sentinel_tile_grid.toMGRS(lat, lon)[:5]
+        tile = sentinel_tiles.toMGRS(lat, lon)[:5]
 
         try:
-            tile_grid = sentinel_tile_grid.grid(tile=tile, cell_size=70)
+            tile_grid = sentinel_tiles.grid(tile=tile, cell_size=70)
         except Exception as e:
             logger.error(e)
             logger.warning(f"unable to process tile {tile}")

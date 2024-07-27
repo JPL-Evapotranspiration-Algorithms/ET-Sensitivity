@@ -19,7 +19,7 @@ def calculate_SZA_from_doy_and_hour(lat: Union[float, np.ndarray], lon: Union[fl
     Returns:
         Union[float, np.ndarray]: The calculated solar zenith angle in degrees.
     """
-    day_angle_rad = day_angle_rad_from_doy(doy)
+    day_angle_rad = day_angle_rad_from_DOY(doy)
     solar_dec_deg = solar_dec_deg_from_day_angle_rad(day_angle_rad)
     SZA = sza_deg_from_lat_dec_hour(lat, solar_dec_deg, hour)
 
@@ -38,7 +38,7 @@ def calculate_SZA_from_datetime(time_UTC: datetime, lat: float, lon: float):
         float: The calculated solar zenith angle in degrees.
     """
     # Calculate the day of year based on the UTC time and longitude
-    doy = day_of_year(time_UTC, lon)
+    doy = solar_day_of_year_for_longitude(time_UTC, lon)
     # Calculate the hour of the day based on the UTC time and longitude
     hour = hour_of_day(time_UTC, lon)
     # Calculate the solar zenith angle in degrees based on the latitude, solar declination angle, and hour of the day
