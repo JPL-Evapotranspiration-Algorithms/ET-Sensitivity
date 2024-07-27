@@ -50,6 +50,7 @@ dependencies:
       - geos5fp
       - koppengeiger
       - mgrs
+      - modisci
       - pycksum
       - rasters
       - sentinelsat

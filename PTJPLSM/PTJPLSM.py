@@ -18,7 +18,7 @@ from BESS import DEFAULT_DOWNSCALE_AIR, DEFAULT_DOWNSCALE_HUMIDITY, DEFAULT_DOWN
 from GEDI import GEDICanopyHeight
 
 from geos5fp import GEOS5FP
-from ORNL.MODISCI import MODISCI
+from modisci import MODISCI
 from SRTM import SRTM
 
 from PTJPL import PTJPL
