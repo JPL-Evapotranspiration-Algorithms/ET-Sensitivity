@@ -3,9 +3,9 @@ import sys
 from datetime import date
 from typing import Union
 from dateutil import parser
-import cl
 from sentinel import Sentinel
 
+import colored_logging as cl
 
 def find_sentinel(
         start: Union[date, str],

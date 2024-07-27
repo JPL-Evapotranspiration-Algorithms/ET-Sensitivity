@@ -19,7 +19,7 @@ from bs4 import BeautifulSoup
 from dateutil import parser
 from matplotlib.colors import LinearSegmentedColormap
 
-import cl
+import colored_logging as cl
 import rasters as rt
 from daterange import date_range
 from rasters import Raster, MultiRaster, SpatialGeometry, RasterGeometry

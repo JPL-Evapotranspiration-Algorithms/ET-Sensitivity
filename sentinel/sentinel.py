@@ -36,7 +36,7 @@ from rasters import Point, Polygon, BBox
 from shapely.geometry.base import BaseGeometry
 from six import string_types
 
-import cl
+import colored_logging as cl
 import raster
 from rasters import RasterGrid, Raster, RasterGeometry, WGS84, CRS
 

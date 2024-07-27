@@ -21,7 +21,7 @@ from pystac import Item
 from pystac_client import Client
 from shapely.geometry import Polygon, Point, mapping, shape
 
-import cl
+import colored_logging as cl
 import rasters as rt
 from HLS import HLSGranule, HLSGranuleID, HLSSentinelGranule, CLOUD_CMAP, \
     WATER_CMAP, HLS, HLSLandsatGranule, HLSNotAvailable, HLSLandsatMissing, HLSLandsatNotAvailable, HLSSentinelMissing, \

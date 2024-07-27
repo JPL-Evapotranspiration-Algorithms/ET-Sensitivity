@@ -13,7 +13,7 @@ from os.path import exists
 from os.path import join
 from time import perf_counter
 
-import cl
+import colored_logging as cl
 import rasters as rt
 from rasters import RasterGeometry, Raster
 

@@ -27,7 +27,7 @@ from .Model_Functions import estimate_std_meridian, sunset_sunrise, \
 from .Roughness_Functions import compute_Z_0M, compute_D_0, compute_Z_0H
 
 import logging
-import cl
+import colored_logging as cl
 
 logger = logging.getLogger(__name__)
 

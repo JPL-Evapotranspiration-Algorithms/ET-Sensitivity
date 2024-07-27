@@ -6,7 +6,7 @@ from typing import Dict, List
 import numpy as np
 import warnings
 from check_distribution.check_distribution import diagnostic
-import cl
+import colored_logging as cl
 from meteorology_conversion.meteorology_conversion import calculate_air_density, calculate_specific_heat, calculate_specific_humidity, calculate_surface_pressure, celcius_to_kelvin
 import rasters as rt
 from GEOS5FP import GEOS5FP
