@@ -7,9 +7,9 @@ from pandas import DataFrame
 from BESS.FLiESANN import process_FLiES
 
 import rasters as rt
-from GEOS5FP import GEOS5FP
+from geos5fp import GEOS5FP
 from SZA import calculate_SZA_from_datetime
-from sentinel_tile_grid import sentinel_tile_grid
+from sentinel_tiles import sentinel_tile_grid
 from koppengeiger import load_koppen_geiger
 
 logger = logging.getLogger(__name__)

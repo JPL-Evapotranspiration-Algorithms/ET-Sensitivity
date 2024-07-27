@@ -10,7 +10,7 @@ from STIC.STIC import MAX_ITERATIONS, USE_VARIABLE_ALPHA
 import rasters as rt
 from rasters import Point
 from SZA import UTC_to_solar, calculate_SZA_from_datetime
-from sentinel_tile_grid import sentinel_tile_grid
+from sentinel_tiles import sentinel_tile_grid
 
 logger = logging.getLogger(__name__)
 

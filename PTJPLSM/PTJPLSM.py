@@ -15,14 +15,14 @@ __author__ = "Gregory Halverson"
 
 from BESS import DEFAULT_DOWNSCALE_AIR, DEFAULT_DOWNSCALE_HUMIDITY, DEFAULT_DOWNSCALE_MOISTURE
 
-from GEDI import GEDICanopyHeight
+from gedi_canopy_height import GEDICanopyHeight
 
-from GEOS5FP import GEOS5FP
-from ORNL.MODISCI import MODISCI
+from geos5fp import GEOS5FP
+from modisci import MODISCI
 from SRTM import SRTM
 
 from PTJPL import PTJPL
-from SoilGrids import SoilGrids
+from soil_capacity_wilting import SoilGrids
 
 from rasters import Raster, RasterGeometry
 

@@ -30,13 +30,13 @@ dependencies:
   - pyresample
   - pysolar
   - pystac-client
-  - python=3.9
+  - python=3.11
   - python-dateutil
   - rasterio>1.0.0
   - requests
   - scikit-image
   - setuptools<58
-  - shapely<2.0.0
+  - shapely
   - tensorflow
   - termcolor
   - untangle
@@ -46,7 +46,14 @@ dependencies:
   - xtensor
   - xtensor-python
   - pip:
+      - colored_logging
+      - gedi-canopy-height
+      - geos5fp
+      - koppengeiger
       - mgrs
+      - modisci
       - pycksum
       - rasters
+      - sentinel-tiles
       - sentinelsat
+      - soil-capacity-wilting
