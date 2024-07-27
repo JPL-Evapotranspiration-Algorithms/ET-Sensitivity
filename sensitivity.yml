@@ -55,3 +55,4 @@ dependencies:
       - pycksum
       - rasters
       - sentinelsat
+      - soil-capacity-wilting
