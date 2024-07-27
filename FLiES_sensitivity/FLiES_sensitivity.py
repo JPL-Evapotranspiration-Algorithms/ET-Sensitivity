@@ -8,7 +8,7 @@ from BESS.FLiESANN import process_FLiES
 
 import rasters as rt
 from geos5fp import GEOS5FP
-from SZA import calculate_SZA_from_datetime
+from sun_angles import calculate_SZA_from_datetime
 from sentinel_tiles import sentinel_tiles
 from koppengeiger import load_koppen_geiger
 

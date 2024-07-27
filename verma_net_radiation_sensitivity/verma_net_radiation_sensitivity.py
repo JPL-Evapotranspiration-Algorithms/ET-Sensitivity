@@ -3,8 +3,8 @@ import pandas as pd
 from pandas import DataFrame
 from verma_net_radiation import process_verma_net_radiation
 
-from SZA import calculate_SZA_from_datetime
-from sentinel_tiles import sentinel_tile_grid
+from sun_angles import calculate_SZA_from_datetime
+from sentinel_tiles import sentinel_tiles
 from koppengeiger import load_koppen_geiger
 
 
