@@ -47,6 +47,7 @@ dependencies:
   - xtensor-python
   - pip:
       - colored_logging
+      - gedi-canopy-height
       - geos5fp
       - koppengeiger
       - mgrs
