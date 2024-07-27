@@ -9,7 +9,7 @@ from check_distribution.check_distribution import diagnostic
 import colored_logging as cl
 from meteorology_conversion.meteorology_conversion import calculate_air_density, calculate_specific_heat, calculate_specific_humidity, calculate_surface_pressure, celcius_to_kelvin
 import rasters as rt
-from GEOS5FP import GEOS5FP
+from geos5fp import GEOS5FP
 from timer import Timer
 
 from rasters import Raster, RasterGeometry
