@@ -46,6 +46,7 @@ dependencies:
   - xtensor
   - xtensor-python
   - pip:
+      - colored_logging
       - mgrs
       - pycksum
       - rasters
