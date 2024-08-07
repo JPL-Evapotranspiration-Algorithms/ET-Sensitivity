@@ -23,7 +23,7 @@ from meteorology_conversion.meteorology_conversion import SVP_Pa_from_Ta_C, calc
 from penman_monteith.penman_monteith import calculate_gamma
 from priestley_taylor.priestley_taylor import delta_Pa_from_Ta_C, delta_kPa_from_Ta_C
 import rasters as rt
-from GEOS5FP import GEOS5FP
+from geos5fp import GEOS5FP
 
 from rasters import Raster, RasterGrid, RasterGeometry
 

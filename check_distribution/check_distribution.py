@@ -4,7 +4,7 @@ from datetime import date
 import numpy as np
 import logging
 
-import cl
+import colored_logging as cl
 from rasters import Raster
 
 logger = logging.getLogger(__name__)

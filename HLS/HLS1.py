@@ -14,7 +14,7 @@ import pandas as pd
 import rasterio
 from dateutil import parser
 
-import cl
+import colored_logging as cl
 import rasters as rt
 from HLS import HLS, HLSGranule, HLSSentinelGranule, HLSLandsatGranule, HLSGranuleID, HLSTileNotAvailable, \
     HLSLandsatNotAvailable, HLSLandsatMissing, HLSDownloadFailed, HLSSentinelNotAvailable, HLSSentinelMissing, \
