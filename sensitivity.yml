@@ -45,7 +45,14 @@ dependencies:
   - xtensor
   - xtensor-python
   - pip:
+      - colored_logging
+      - gedi-canopy-height
+      - geos5fp
+      - koppengeiger
       - mgrs
+      - modisci
       - pycksum
       - rasters
+      - sentinel-tiles
       - sentinelsat
+      - soil-capacity-wilting
