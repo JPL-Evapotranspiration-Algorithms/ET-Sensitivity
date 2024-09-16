@@ -36,7 +36,6 @@ dependencies:
   - scikit-image
   - setuptools<58
   - shapely
-  - tensorflow
   - termcolor
   - untangle
   - urllib3
@@ -46,6 +45,7 @@ dependencies:
   - xtensor-python
   - pip:
       - colored_logging
+      - FLiESANN
       - gedi-canopy-height
       - geos5fp
       - koppengeiger
@@ -56,3 +56,6 @@ dependencies:
       - sentinel-tiles
       - sentinelsat
       - soil-capacity-wilting
+      - sun-angles
+      - tensorflow==2.15.*
+      - typing-extensions>=4.12.2

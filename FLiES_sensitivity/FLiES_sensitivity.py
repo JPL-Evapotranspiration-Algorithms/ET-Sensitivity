@@ -4,13 +4,13 @@ import numpy as np
 import pandas as pd
 from dateutil import parser
 from pandas import DataFrame
-from BESS.FLiESANN import process_FLiES
 
 import rasters as rt
 from geos5fp import GEOS5FP
-from SZA import calculate_SZA_from_datetime
-from sentinel_tiles import sentinel_tile_grid
+from sun_angles import calculate_SZA_from_datetime
+from sentinel_tiles import sentinel_tiles
 from koppengeiger import load_koppen_geiger
+from FLiESANN import process_FLiES
 
 logger = logging.getLogger(__name__)
 
@@ -48,10 +48,10 @@ def generate_FLiES_inputs(
         time_UTC = parser.parse(str(time_UTC))
         doy.append(time_UTC.timetuple().tm_yday)
         date_UTC = time_UTC.date()
-        tile = sentinel_tile_grid.toMGRS(lat, lon)[:5]
+        tile = sentinel_tiles.toMGRS(lat, lon)[:5]
 
         try:
-            tile_grid = sentinel_tile_grid.grid(tile=tile, cell_size=70)
+            tile_grid = sentinel_tiles.grid(tile=tile, cell_size=70)
         except Exception as e:
             logger.error(e)
             logger.warning(f"unable to process tile {tile}")
@@ -162,7 +162,7 @@ def generate_FLiES_inputs(
     return FLiES_inputs_df
 
 def process_FLiES_table(FLiES_inputs_df: DataFrame) -> DataFrame:
-    Ra, Rg, UV, VIS, NIR, VISdiff, NIRdiff, VISdir, NIRdir, tm, puv, pvis, pnir, fduv, fdvis, fdnir = process_FLiES(
+    FLiES_results = process_FLiES(
         doy=FLiES_inputs_df.doy,
         albedo=FLiES_inputs_df.albedo,
         COT=FLiES_inputs_df.COT,
@@ -173,6 +173,23 @@ def process_FLiES_table(FLiES_inputs_df: DataFrame) -> DataFrame:
         SZA=FLiES_inputs_df.SZA,
         KG_climate=FLiES_inputs_df.KG
     )
+
+    Ra = FLiES_results["Ra"]
+    Rg = FLiES_results["Rg"]
+    UV = FLiES_results["UV"]
+    VIS = FLiES_results["VIS"]
+    NIR = FLiES_results["NIR"]
+    VISdiff = FLiES_results["VISdiff"]
+    NIRdiff = FLiES_results["NIRdiff"]
+    VISdir = FLiES_results["VISdir"]
+    NIRdir = FLiES_results["NIRdir"]
+    tm = FLiES_results["tm"]
+    puv = FLiES_results["puv"]
+    pvis = FLiES_results["pvis"]
+    pnir = FLiES_results["pnir"]
+    fduv = FLiES_results["fduv"]
+    fdvis = FLiES_results["fdvis"]
+    fdnir = FLiES_results["fdnir"]
 
     FLiES_outputs_df = FLiES_inputs_df.copy()
     FLiES_outputs_df["Ra"] = Ra
