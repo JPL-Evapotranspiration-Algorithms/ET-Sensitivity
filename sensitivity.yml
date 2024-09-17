@@ -45,7 +45,7 @@ dependencies:
   - xtensor-python
   - pip:
       - colored_logging
-      - FLiESANN
+      - FLiESANN>=1.1.0
       - gedi-canopy-height
       - geos5fp
       - koppengeiger
