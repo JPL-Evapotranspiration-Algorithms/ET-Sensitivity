@@ -1,6 +1,7 @@
-from typing import Callable
+from typing import Callable, Dict, Tuple
 import numpy as np
 import pandas as pd
+import scipy
 
 def repeat_rows(df: pd.DataFrame, n: int) -> pd.DataFrame:
     return pd.DataFrame(np.repeat(df.values, n, axis=0), columns=df.columns)
@@ -61,17 +62,81 @@ def perturbed_run(
     results_df = pd.DataFrame({
         # "tower": perturbed_input_df.tower,
         # "time_solar": perturbed_input_df.time_solar,
-        f"{input_variable}_unperturbed": unperturbed_input,
-        f"{input_variable}_perturbation": input_perturbation,
-        f"{input_variable}_perturbation_std": input_perturbation_std,
-        f"{input_variable}_perturbed": perturbed_input,
-        f"{output_variable}_unperturbed": unperturbed_output,
-        f"{output_variable}_perturbation": output_perturbation,
-        f"{output_variable}_perturbation_std": output_perturbation_std,
-        f"{output_variable}_perturbed": perturbed_output, 
+        "input_variable": input_variable,
+        "output_variable": output_variable,
+        "input_unperturbed": unperturbed_input,
+        "input_perturbation": input_perturbation,
+        "input_perturbation_std": input_perturbation_std,
+        "input_perturbed": perturbed_input,
+        "output_unperturbed": unperturbed_output,
+        "output_perturbation": output_perturbation,
+        "output_perturbation_std": output_perturbation_std,
+        "output_perturbed": perturbed_output, 
     })
 
     return results_df
+
+def sensitivity_analysis(
+        input_df: pd.DataFrame, 
+        input_variables: str, 
+        output_variables: str, 
+        forward_process: Callable,
+        perturbation_process: Callable = np.random.normal,
+        n: int = 100, 
+        perturbation_mean: float = 0,
+        perturbation_std: float = None) -> Tuple[pd.DataFrame, Dict]:
+    sensitivity_metrics_columns = ["input_variable", "output_variable", "metric", "value"]
+    sensitivity_metrics_df = pd.DataFrame({}, columns=sensitivity_metrics_columns)
+
+    perturbation_df = pd.DataFrame([], columns=[
+            "input_variable",
+            "output_variable",
+            "input_unperturbed",
+            "input_perturbation",
+            "input_perturbation_std",
+            "input_perturbed",
+            "output_unperturbed",
+            "output_perturbation",
+            "output_perturbation_std",
+            "output_perturbed"
+        ])
+
+    for output_variable in output_variables:
+        for input_variable in input_variables:
+            run_results = perturbed_run(
+                input_df=input_df,
+                input_variable=input_variable,
+                output_variable=output_variable,
+                forward_process=forward_process,
+                perturbation_process=perturbation_process,
+                n=n,
+                perturbation_mean=perturbation_mean,
+                perturbation_std=perturbation_std
+            )
+
+            perturbation_df = pd.concat([perturbation_df, run_results])
+            input_perturbation_std = run_results[(run_results.input_variable == input_variable) & (run_results.output_variable == output_variable)].input_perturbation_std
+            output_perturbation_std = run_results[(run_results.output_variable == output_variable) & (run_results.output_variable == output_variable)].output_perturbation_std
+            
+            correlation = np.corrcoef(input_perturbation_std, output_perturbation_std)[0][1]
+            
+            sensitivity_metrics_df = pd.concat([sensitivity_metrics_df, pd.DataFrame([[
+                input_variable, 
+                output_variable, 
+                "correlation", 
+                correlation
+            ]], columns=sensitivity_metrics_columns)])
+
+            r2 = scipy.stats.linregress(input_perturbation_std, output_perturbation_std)[2] ** 2
+
+            sensitivity_metrics_df = pd.concat([sensitivity_metrics_df, pd.DataFrame([[
+                input_variable, 
+                output_variable, 
+                "r2", 
+                r2
+            ]], columns=sensitivity_metrics_columns)])
+
+    return perturbation_df, sensitivity_metrics_df
 
 def joint_perturbed_run(
         input_df: pd.DataFrame, 
