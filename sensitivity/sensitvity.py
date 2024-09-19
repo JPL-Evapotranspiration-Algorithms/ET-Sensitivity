@@ -115,10 +115,10 @@ def sensitivity_analysis(
             )
 
             perturbation_df = pd.concat([perturbation_df, run_results])
-            input_perturbation_std = run_results[(run_results.input_variable == input_variable) & (run_results.output_variable == output_variable)].input_perturbation_std
-            output_perturbation_std = run_results[(run_results.output_variable == output_variable) & (run_results.output_variable == output_variable)].output_perturbation_std
-            
-            correlation = np.corrcoef(input_perturbation_std, output_perturbation_std)[0][1]
+            input_perturbation_std = np.array(run_results[(run_results.input_variable == input_variable) & (run_results.output_variable == output_variable)].input_perturbation_std).astype(np.float32)
+            output_perturbation_std = np.array(run_results[(run_results.output_variable == output_variable) & (run_results.output_variable == output_variable)].output_perturbation_std).astype(np.float32)
+            # correlation = np.corrcoef(input_perturbation_std, output_perturbation_std)[0][1]
+            correlation = scipy.stats.pearsonr(input_perturbation_std, output_perturbation_std)[0]
             
             sensitivity_metrics_df = pd.concat([sensitivity_metrics_df, pd.DataFrame([[
                 input_variable, 

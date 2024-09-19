@@ -44,6 +44,7 @@ dependencies:
   - xtensor
   - xtensor-python
   - pip:
+      - BESS>=1.2.0
       - colored_logging
       - FLiESANN>=1.1.0
       - gedi-canopy-height
