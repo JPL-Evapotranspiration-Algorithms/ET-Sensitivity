@@ -1,8 +1,9 @@
 ```mermaid
-graph LR;
+graph TB;
     ECOSTRESS
 
     subgraph L2T_LSTE
+        direction LR
         ST[Surface<br>Temperature]
         emissivity[Emissivity]
         elevation[Elevation]
@@ -15,6 +16,7 @@ graph LR;
     STARS[STARS<br>Data<br>Fusion]
     
     subgraph L2T_STARS
+        direction LR
         NDVI[Normalized<br>Difference<br>Vegetation<br>Index]
         albedo[Albedo]
     end
@@ -22,6 +24,7 @@ graph LR;
     GEOS5FP[GEOS-5 FP]
     
     subgraph AT[Atmospheric Transmissivity]
+        direction LR
         AOT[Aerosol<br>Optical<br>Thickness]
         COT[Cloud<br>Optical<br>Thickness]
         vapor[Water<br>Vapor]
@@ -38,6 +41,7 @@ graph LR;
     FLiES[Forest<br>Light<br>Environmental<br>Simulator]
     
     subgraph RT[Radiative Transfer]
+        direction LR
         Rg[Solar<br>Radiation]
         UV[Ultra-Violet<br>Radiation]
         VISdiff[Visible<br>Diffuse<br>Radiation]
@@ -126,4 +130,5 @@ graph LR;
     Verma-->Verma_Rn
 
     Rn_estimates-->Rn
+
 ```
