@@ -10,7 +10,7 @@ graph LR;
     
     SRTM[Shuttle<br>Radar<br>Topgraphy<br>Mission]
     
-    HLS
+    HLS[Harmonized<br>Landsat<br>Sentinel]
     VIIRS
     STARS[STARS<br>Data<br>Fusion]
     
@@ -50,10 +50,18 @@ graph LR;
 
     BESS[Breathing<br>Earth<br>Systems<br>Simulator]
 
-    subgraph Rn[Net Radiation Options]
+    subgraph Rn_estimates[Net Radiation Estimates]
         BESS_Rn[BESS<br>Net<br>Radiation]
         Verma_Rn[Verma<br>Net<br>Radiation]
     end
+
+    Rn[Net<br>Radiation]
+
+    subgraph ET[Evapotranspiration Estimates]
+        BESS_ET[BESS<br>Evapotranspiration]
+    end
+
+    GPP[Gross<br>Primary<br>Productivity]
 
     ECOSTRESS-->ST
     ECOSTRESS-->emissivity
@@ -105,6 +113,8 @@ graph LR;
     ST-->BESS
 
     BESS-->BESS_Rn
+    BESS-->BESS_ET
+    BESS-->GPP
 
     ST-->Verma
     emissivity-->Verma
@@ -114,4 +124,6 @@ graph LR;
     RH-->Verma
 
     Verma-->Verma_Rn
+
+    Rn_estimates-->Rn
 ```
