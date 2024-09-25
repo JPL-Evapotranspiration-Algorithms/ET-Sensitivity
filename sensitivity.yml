@@ -1,7 +1,6 @@
 name: sensitivity
 channels:
   - conda-forge
-  - defaults
 dependencies:
   - astropy
   - beautifulsoup4
@@ -37,7 +36,6 @@ dependencies:
   - scikit-image
   - setuptools<58
   - shapely
-  - tensorflow
   - termcolor
   - untangle
   - urllib3
@@ -46,7 +44,9 @@ dependencies:
   - xtensor
   - xtensor-python
   - pip:
+      - BESS>=1.2.0
       - colored_logging
+      - FLiESANN>=1.1.0
       - gedi-canopy-height
       - geos5fp
       - koppengeiger
@@ -54,8 +54,9 @@ dependencies:
       - modisci
       - pycksum
       - rasters
-      - solar-apparent-time
       - sentinel-tiles
       - sentinelsat
       - soil-capacity-wilting
       - sun-angles
+      - tensorflow==2.15.*
+      - typing-extensions>=4.12.2

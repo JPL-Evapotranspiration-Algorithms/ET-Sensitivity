@@ -1,0 +1,7 @@
+{
+  "args": ["--no-sandbox"],
+  "defaultViewport": {
+    "width": 1280,
+    "height": 720
+  }
+}
