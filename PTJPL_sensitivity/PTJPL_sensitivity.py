@@ -7,7 +7,8 @@ from pandas import DataFrame
 from PTJPL import process_PTJPL
 
 import rasters as rt
-from SZA import UTC_to_solar, calculate_SZA_from_datetime
+from solar_apparent_time import UTC_to_solar
+from sun_angles import calculate_SZA_from_datetime
 from sentinel_tiles import sentinel_tiles
 
 from PTJPL.Topt import load_Topt
