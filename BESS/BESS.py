@@ -2,7 +2,7 @@ from os.path import join, abspath, dirname
 from typing import Union
 
 import numpy as np
-from SZA import calculate_SZA_from_doy_and_hour
+from sun_angles import calculate_SZA_from_DOY_and_hour
 import rasters as rt
 from rasters import RasterGeometry, Raster
 from vegetation_conversion.vegetation_conversion import LAI_from_NDVI
@@ -85,7 +85,7 @@ def process_BESS_latlon(
         albedo_NIR = albedo
 
     if SZA is None:
-        SZA = calculate_SZA_from_doy_and_hour(lat, lon, day_of_year, hour_of_day)
+        SZA = calculate_SZA_from_DOY_and_hour(lat, lon, day_of_year, hour_of_day)
 
     geometry = rt.CoordinateArray(longitude, latitude)
 

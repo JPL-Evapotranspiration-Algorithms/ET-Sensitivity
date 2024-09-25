@@ -54,6 +54,8 @@ dependencies:
       - modisci
       - pycksum
       - rasters
+      - solar-apparent-time
       - sentinel-tiles
       - sentinelsat
       - soil-capacity-wilting
+      - sun-angles
