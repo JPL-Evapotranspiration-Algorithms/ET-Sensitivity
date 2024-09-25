@@ -8,7 +8,7 @@ from PTJPL import process_PTJPL
 
 import rasters as rt
 from SZA import UTC_to_solar, calculate_SZA_from_datetime
-from sentinel_tiles import sentinel_tile_grid
+from sentinel_tiles import sentinel_tiles
 
 from PTJPL.Topt import load_Topt
 from PTJPL.fAPARmax import load_fAPARmax
@@ -44,12 +44,12 @@ def generate_PTJPL_inputs(PTJPL_inputs_from_calval_df: DataFrame) -> DataFrame:
         doy.append(time_UTC.timetuple().tm_yday)
         date_UTC = time_UTC.date()
         
-        # tile = sentinel_tile_grid.toMGRS(lat, lon)[:5]
-        # tile_grid = sentinel_tile_grid.grid(tile=tile, cell_size=70)
+        # tile = sentinel_tiles.toMGRS(lat, lon)[:5]
+        # tile_grid = sentinel_tiles.grid(tile=tile, cell_size=70)
 
         try:
-            tile = sentinel_tile_grid.toMGRS(lat, lon)[:5]
-            tile_grid = sentinel_tile_grid.grid(tile=tile, cell_size=70)
+            tile = sentinel_tiles.toMGRS(lat, lon)[:5]
+            tile_grid = sentinel_tiles.grid(tile=tile, cell_size=70)
         except Exception as e:
             logger.warning(e)
             Topt.append(np.nan)
