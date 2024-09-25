@@ -9,8 +9,9 @@ from STIC.STIC import MAX_ITERATIONS, USE_VARIABLE_ALPHA
 
 import rasters as rt
 from rasters import Point
-from SZA import UTC_to_solar, calculate_SZA_from_datetime
-from sentinel_tiles import sentinel_tile_grid
+from solar_apparent_time import UTC_to_solar
+from sun_angles import calculate_SZA_from_datetime
+from sentinel_tiles import sentinel_tiles
 
 logger = logging.getLogger(__name__)
 
@@ -42,8 +43,8 @@ def generate_STIC_inputs(STIC_inputs_from_calval_df: DataFrame) -> DataFrame:
         hour_of_day.append(time_solar.hour)
         doy.append(time_UTC.timetuple().tm_yday)
         date_UTC = time_UTC.date()
-        tile = sentinel_tile_grid.toMGRS(lat, lon)[:5]
-        tile_grid = sentinel_tile_grid.grid(tile=tile, cell_size=70)
+        tile = sentinel_tiles.toMGRS(lat, lon)[:5]
+        tile_grid = sentinel_tiles.grid(tile=tile, cell_size=70)
         rows, cols = tile_grid.shape
         row, col = tile_grid.index_point(Point(lon, lat))
         geometry = tile_grid[max(0, row - 1):min(row + 2, rows - 1),
