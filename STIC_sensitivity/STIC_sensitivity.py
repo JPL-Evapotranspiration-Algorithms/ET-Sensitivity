@@ -1,17 +1,14 @@
 import logging
 
 import numpy as np
-import pandas as pd
 from dateutil import parser
 from pandas import DataFrame
+from rasters import Point
+from sentinel_tiles import sentinel_tiles
+from solar_apparent_time import UTC_to_solar
+
 from STIC import process_STIC_array
 from STIC.STIC import MAX_ITERATIONS, USE_VARIABLE_ALPHA
-
-import rasters as rt
-from rasters import Point
-from solar_apparent_time import UTC_to_solar
-from sun_angles import calculate_SZA_from_datetime
-from sentinel_tiles import sentinel_tiles
 
 logger = logging.getLogger(__name__)
 
