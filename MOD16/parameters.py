@@ -2,7 +2,7 @@ from typing import Union
 from os.path import join, abspath, dirname
 import numpy as np
 import pandas as pd
-from MCD12C1.MCD12C1 import load_MCD12C1_IGBP
+from MCD12C1_2019_v006 import load_MCD12C1_IGBP
 from rasters import Raster, RasterGeometry
 
 LUT = pd.read_csv(join(abspath(dirname(__file__)), 'mod16.csv'))
