@@ -15,7 +15,7 @@ import numpy as np
 import pandas as pd
 from numpy import where, nan, exp, array, isnan, logical_and, clip, float32
 import warnings
-from BESS.FLiESANN import process_FLiES_ANN
+from breathing_earth_system_simulator.FLiESANN import process_FLiES_ANN
 from MCD12C1.MCD12C1 import load_MCD12C1_IGBP
 from MOD16.parameters import MOD16_parameter_from_IGBP
 from evapotranspiration_conversion.evapotranspiration_conversion import lambda_Jkg_from_Ta_C

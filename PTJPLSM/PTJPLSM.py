@@ -13,7 +13,7 @@ import rasters as rt
 
 __author__ = "Gregory Halverson"
 
-from BESS import DEFAULT_DOWNSCALE_AIR, DEFAULT_DOWNSCALE_HUMIDITY, DEFAULT_DOWNSCALE_MOISTURE
+from breathing_earth_system_simulator import DEFAULT_DOWNSCALE_AIR, DEFAULT_DOWNSCALE_HUMIDITY, DEFAULT_DOWNSCALE_MOISTURE
 
 from gedi_canopy_height import GEDICanopyHeight
 

@@ -44,12 +44,13 @@ dependencies:
   - xtensor
   - xtensor-python
   - pip:
-      - BESS>=1.2.0
+      - breathing-earth-system-simulator
       - colored_logging
       - FLiESANN>=1.1.0
       - gedi-canopy-height
       - geos5fp
       - koppengeiger
+      - MCD12C1-2019-v006
       - mgrs
       - modisci
       - pycksum
