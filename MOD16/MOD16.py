@@ -7,48 +7,34 @@ https://landweb.nascom.nasa.gov/QA_WWW/forPage/user_guide/MOD16UsersGuide2016.pd
 Developed by Gregory Halverson in the Jet Propulsion Laboratory Year-Round Internship Program (Columbus Technologies and Services), in coordination with the ECOSTRESS mission and master's thesis studies at California State University, Northridge.
 """
 import logging
-from typing import Callable, Dict, Union
-from datetime import datetime
-from os.path import join, abspath, dirname, expanduser
+from typing import Dict, Union
 
 import numpy as np
-import pandas as pd
-from numpy import where, nan, exp, array, isnan, logical_and, clip, float32
-import warnings
-from breathing_earth_system_simulator.FLiESANN import process_FLiES_ANN
-from MCD12C1.MCD12C1 import load_MCD12C1_IGBP
+import rasters as rt
+from numpy import isnan, float32
+from rasters import Raster
+
 from MOD16.parameters import MOD16_parameter_from_IGBP
 from evapotranspiration_conversion.evapotranspiration_conversion import lambda_Jkg_from_Ta_C
-from meteorology_conversion.meteorology_conversion import SVP_Pa_from_Ta_C, calculate_specific_heat, calculate_surface_pressure, celcius_to_kelvin
+from meteorology_conversion import calculate_specific_humidity, calculate_air_density
+from meteorology_conversion.meteorology_conversion import SVP_Pa_from_Ta_C, calculate_specific_heat, \
+    calculate_surface_pressure, celcius_to_kelvin
 from penman_monteith.penman_monteith import calculate_gamma
-from priestley_taylor.priestley_taylor import delta_Pa_from_Ta_C, delta_kPa_from_Ta_C
-import rasters as rt
-from geos5fp import GEOS5FP
-
-from rasters import Raster, RasterGrid, RasterGeometry
-
-from soil_heat_flux import calculate_soil_heat_flux
-from evapotranspiration_conversion import daily_ET_from_daily_LE
-from meteorology_conversion import kelvin_to_celsius, calculate_specific_humidity, calculate_air_density, delta_from_Ta_C
+from priestley_taylor.priestley_taylor import delta_Pa_from_Ta_C
 from vegetation_conversion.vegetation_conversion import FVC_from_NDVI, LAI_from_NDVI
-
+from .VPD_factor import calculate_VPD_factor
+from .canopy_aerodynamic_resistance import calculate_rtotc
+from .canopy_conductance import calculate_canopy_conductance
 from .constants import *
-
+from .correctance_factor import calculate_rcorr
 from .fwet import calculate_fwet
+from .interception import calculate_interception
+from .potential_soil_evaporation import calculate_potential_soil_evaporation
 from .soil_moisture_constraint import calculate_fSM
 from .tmin_factor import calculate_tmin_factor
-from .correctance_factor import calculate_rcorr
-from .VPD_factor import calculate_VPD_factor
-
-from .canopy_conductance import calculate_canopy_conductance
-
-from .wet_canopy_resistance import calculate_wet_canopy_resistance
-from .canopy_aerodynamic_resistance import calculate_rtotc
-
-from .wet_soil_evaporation import calculate_wet_soil_evaporation
-from .potential_soil_evaporation import calculate_potential_soil_evaporation
-from .interception import calculate_interception
 from .transpiration import calculate_transpiration
+from .wet_canopy_resistance import calculate_wet_canopy_resistance
+from .wet_soil_evaporation import calculate_wet_soil_evaporation
 
 __author__ = 'Kaniska Mallick, Adam Purdy, Gregory Halverson'
 
@@ -65,6 +51,7 @@ DEFAULT_OUTPUT_VARIABLES = [
     'LE_daily',
     'ET_daily_kg'
 ]
+
 
 def process_MOD16_array(
         Rn: Union[Raster, np.ndarray],
@@ -131,7 +118,7 @@ def process_MOD16_array(
     # from specific heat of water vapor (CPW)
     # and specific heat of dry air (CPD)
     Cp_Jkg = calculate_specific_heat(specific_humidity)
-    results["Cp"] = Cp_Jkg    
+    results["Cp"] = Cp_Jkg
 
     # calculate delta term if it's not given
     if delta_Pa is None:
@@ -161,7 +148,7 @@ def process_MOD16_array(
 
     # query leaf conductance to sensible heat (gl_sh) in seconds per meter
     gl_sh = MOD16_parameter_from_IGBP(
-        variable="gl_sh", 
+        variable="gl_sh",
         IGBP=IGBP
     )
 
@@ -185,7 +172,7 @@ def process_MOD16_array(
 
     # calculate leaf conductance to evaporated water vapor (gl_e_wv)
     gl_e_wv = MOD16_parameter_from_IGBP(
-        variable="gl_e_wv", 
+        variable="gl_e_wv",
         IGBP=IGBP
     )
 
@@ -203,18 +190,18 @@ def process_MOD16_array(
     # calculate wet latent heat flux (LEi)
     # in watts per square meter
     LEi = calculate_interception(
-        delta_Pa=delta_Pa, 
-        Ac=Ac, 
-        rho=rho_kgm3, 
-        Cp=Cp_Jkg, 
-        VPD_Pa=VPD_Pa, 
-        FVC=FVC, 
-        rhrc=rhrc, 
-        fwet=fwet, 
+        delta_Pa=delta_Pa,
+        Ac=Ac,
+        rho=rho_kgm3,
+        Cp=Cp_Jkg,
+        VPD_Pa=VPD_Pa,
+        FVC=FVC,
+        rhrc=rhrc,
+        fwet=fwet,
         rvc=rvc,
         gamma_Jkg=gamma_Jkg
     )
-    
+
     results['LEi'] = LEi
 
     # calculate correctance factor (rcorr)
@@ -225,7 +212,7 @@ def process_MOD16_array(
 
     # query biome-specific mean potential stomatal conductance per unit leaf area
     CL = MOD16_parameter_from_IGBP(
-        variable="CL", 
+        variable="CL",
         IGBP=IGBP
     )
 
@@ -233,7 +220,7 @@ def process_MOD16_array(
 
     # query open minimum temperature by land-cover
     tmin_open = MOD16_parameter_from_IGBP(
-        variable="tmin_open", 
+        variable="tmin_open",
         IGBP=IGBP
     )
 
@@ -241,7 +228,7 @@ def process_MOD16_array(
 
     # query closed minimum temperature by land-cover
     tmin_close = MOD16_parameter_from_IGBP(
-        variable="tmin_close", 
+        variable="tmin_close",
         IGBP=IGBP
     )
 
@@ -253,7 +240,7 @@ def process_MOD16_array(
 
     # query open vapor pressure deficit by land-cover
     VPD_open = MOD16_parameter_from_IGBP(
-        variable="VPD_open", 
+        variable="VPD_open",
         IGBP=IGBP
     )
 
@@ -261,7 +248,7 @@ def process_MOD16_array(
 
     # query closed vapor pressure deficit by land-cover
     VPD_close = MOD16_parameter_from_IGBP(
-        variable="VPD_close", 
+        variable="VPD_close",
         IGBP=IGBP
     )
 
@@ -303,32 +290,32 @@ def process_MOD16_array(
 
     # calculate transpiration
     LEc = calculate_transpiration(
-        delta_Pa=delta_Pa, 
-        Ac=Ac, 
-        rho=rho_kgm3, 
-        Cp_Jkg=Cp_Jkg, 
-        VPD_Pa=VPD_Pa, 
-        FVC=FVC, 
-        ra=ra, 
-        fwet=fwet, 
+        delta_Pa=delta_Pa,
+        Ac=Ac,
+        rho=rho_kgm3,
+        Cp_Jkg=Cp_Jkg,
+        VPD_Pa=VPD_Pa,
+        FVC=FVC,
+        ra=ra,
+        fwet=fwet,
         rs=rs,
         gamma_Jkg=gamma_Jkg
     )
-    
+
     results['LEc'] = LEc
 
     # soil evaporation
 
     # query aerodynamic resistant constraints from land-cover
     rbl_max = MOD16_parameter_from_IGBP(
-        variable="rbl_max", 
+        variable="rbl_max",
         IGBP=IGBP
     )
 
     results['rbl_max'] = rbl_max
 
     rbl_min = MOD16_parameter_from_IGBP(
-        variable="rbl_min", 
+        variable="rbl_min",
         IGBP=IGBP
     )
 
@@ -358,34 +345,34 @@ def process_MOD16_array(
 
     # calculate wet soil evaporation
     LE_soil_wet = calculate_wet_soil_evaporation(
-        delta_Pa=delta_Pa, 
-        Asoil=Asoil, 
-        rho=rho_kgm3, 
-        Cp_Jkg=Cp_Jkg, 
-        FVC=FVC, 
-        VPD_Pa=VPD_Pa, 
-        ras=ras, 
-        fwet=fwet, 
+        delta_Pa=delta_Pa,
+        Asoil=Asoil,
+        rho=rho_kgm3,
+        Cp_Jkg=Cp_Jkg,
+        FVC=FVC,
+        VPD_Pa=VPD_Pa,
+        ras=ras,
+        fwet=fwet,
         rtot=rtot,
         gamma_Jkg=gamma_Jkg
     )
-    
+
     results['LE_soil_wet'] = LE_soil_wet
 
     # calculate potential soil evaporation
     LE_soil_pot = calculate_potential_soil_evaporation(
-        delta_Pa=delta_Pa, 
-        Asoil=Asoil, 
-        rho=rho_kgm3, 
-        Cp_Jkg=Cp_Jkg, 
-        FVC=FVC, 
-        VPD_Pa=VPD_Pa, 
-        ras=ras, 
-        fwet=fwet, 
+        delta_Pa=delta_Pa,
+        Asoil=Asoil,
+        rho=rho_kgm3,
+        Cp_Jkg=Cp_Jkg,
+        FVC=FVC,
+        VPD_Pa=VPD_Pa,
+        ras=ras,
+        fwet=fwet,
         rtot=rtot,
         gamma_Jkg=gamma_Jkg
     )
-    
+
     results['LE_soil_pot'] = LE_soil_pot
 
     # calculate soil moisture constraint
