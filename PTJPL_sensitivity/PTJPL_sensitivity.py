@@ -11,6 +11,8 @@ from PTJPL import process_PTJPL
 from PTJPL.Topt import load_Topt
 from PTJPL.fAPARmax import load_fAPARmax
 
+from SEBAL import calculate_soil_heat_flux as SEBAL_G
+
 logger = logging.getLogger(__name__)
 
 def generate_PTJPL_inputs(PTJPL_inputs_from_calval_df: DataFrame) -> DataFrame:
@@ -100,30 +102,35 @@ def process_PTJPL_table(input_df: DataFrame) -> DataFrame:
     hour_of_day = np.array(input_df.hour_of_day)
     doy = np.array(input_df.doy)
     lat = np.array(input_df.lat)
-    ST_C = np.array(input_df.ST_C)
-    emissivity = np.array(input_df.EmisWB)
-    NDVI = np.array(input_df.NDVI)
+    ST_C = np.array(input_df.ST_C).astype(np.float64)
+    emissivity = np.array(input_df.EmisWB).astype(np.float64)
+    NDVI = np.array(input_df.NDVI).astype(np.float64)
 
-    NDVI = np.where(NDVI > 0.06, NDVI, np.nan)
+    NDVI = np.where(NDVI > 0.06, NDVI, np.nan).astype(np.float64)
 
-    albedo = np.array(input_df.albedo)
+    albedo = np.array(input_df.albedo).astype(np.float64)
     
     if "Ta_C" in input_df:
-        Ta_C = np.array(input_df.Ta_C)
+        Ta_C = np.array(input_df.Ta_C).astype(np.float64)
     elif "Ta" in input_df:
-        Ta_C = np.array(input_df.Ta)
+        Ta_C = np.array(input_df.Ta).astype(np.float64)
 
-    RH = np.array(input_df.RH)
-    Rn = np.array(input_df.Rn)
-    Topt = np.array(input_df.Topt)
-    fAPARmax = np.array(input_df.fAPARmax)
+    RH = np.array(input_df.RH).astype(np.float64)
+    Rn = np.array(input_df.Rn).astype(np.float64)
+    Topt = np.array(input_df.Topt).astype(np.float64)
+    fAPARmax = np.array(input_df.fAPARmax).astype(np.float64)
 
-    fAPARmax = np.where(fAPARmax == 0, np.nan, fAPARmax)
+    fAPARmax = np.where(fAPARmax == 0, np.nan, fAPARmax).astype(np.float64)
 
     if "G" in input_df:
-        G = np.array(input_df.G)
+        G = np.array(input_df.G).astype(np.float64)
     else:
-        G = None
+        G = SEBAL_G(
+            Rn=Rn,
+            ST_C=ST_C,
+            NDVI=NDVI,
+            albedo=albedo
+        ).astype(np.float64)
     
     results = process_PTJPL(
         # ST_C = ST_C,

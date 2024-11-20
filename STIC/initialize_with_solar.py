@@ -36,7 +36,7 @@ def initialize_with_solar(
     ) -> Tuple[Union[Raster, np.ndarray]]:
     # Rn SOIL
     kRN = 0.6
-    Rn_soil = Rn_Wm2 * rt.exp(-kRN * LAI)
+    Rn_soil = Rn_Wm2 * np.exp(-kRN * LAI)
 
     LWnet = calculate_net_longwave_radiation(
         Ta_C=Ta_C, 
