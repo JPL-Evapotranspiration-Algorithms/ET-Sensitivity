@@ -1,17 +1,15 @@
 import logging
 
 import numpy as np
-import pandas as pd
 from dateutil import parser
 from pandas import DataFrame
+from rasters import Point
+from sentinel_tiles import sentinel_tiles
+from solar_apparent_time import UTC_to_solar
+
 from STIC import process_STIC_array
 from STIC.STIC import MAX_ITERATIONS, USE_VARIABLE_ALPHA
-
-import rasters as rt
-from rasters import Point
-from solar_apparent_time import UTC_to_solar
-from sun_angles import calculate_SZA_from_datetime
-from sentinel_tiles import sentinel_tiles
+from SEBAL import calculate_soil_heat_flux as SEBAL_G
 
 logger = logging.getLogger(__name__)
 
@@ -85,7 +83,12 @@ def process_STIC_table(
     if "G" in input_df:
         G = np.array(input_df.G)
     else:
-        G = None
+        G = SEBAL_G(
+            Rn=Rn,
+            ST_C=ST_C,
+            NDVI=NDVI,
+            albedo=albedo
+        )
     
     results = process_STIC_array(
         hour_of_day=hour_of_day,

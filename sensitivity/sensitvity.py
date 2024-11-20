@@ -2,9 +2,32 @@ from typing import Callable, Dict, Tuple
 import numpy as np
 import pandas as pd
 import scipy
+from scipy.stats import mstats
 
 def repeat_rows(df: pd.DataFrame, n: int) -> pd.DataFrame:
     return pd.DataFrame(np.repeat(df.values, n, axis=0), columns=df.columns)
+
+def divide_by_std(perterbations: np.array, unperturbed_values: np.array) -> np.array:
+    return perterbations / np.nanstd(unperturbed_values)
+
+def divide_by_unperturbed(perterbations: np.array, unperturbed_values: np.array) -> np.array:
+    unperturbed_values = np.array(unperturbed_values).astype(np.float64)
+    unperturbed_values = np.where(np.isinf(unperturbed_values), np.nan, unperturbed_values)
+    unperturbed_values = np.where(unperturbed_values == 0, np.nan, unperturbed_values)
+    normalized_values = perterbations / unperturbed_values
+    
+    return normalized_values
+
+def divide_absolute_by_unperturbed(perterbations: np.array, unperturbed_values: np.array) -> np.array:
+    unperturbed_values = np.array(unperturbed_values).astype(np.float64)
+    unperturbed_values = np.where(np.isinf(unperturbed_values), np.nan, unperturbed_values)
+    unperturbed_values = np.where(unperturbed_values == 0, np.nan, unperturbed_values)
+    perterbations = np.abs(perterbations)
+    normalized_values = perterbations / unperturbed_values
+    
+    return normalized_values
+
+default_normalization_function = divide_by_std
 
 def perturbed_run(
         input_df: pd.DataFrame, 
@@ -12,9 +35,11 @@ def perturbed_run(
         output_variable: str, 
         forward_process: Callable,
         perturbation_process: Callable = np.random.normal,
+        normalization_function: Callable = default_normalization_function,
         n: int = 100, 
         perturbation_mean: float = 0,
-        perturbation_std: float = None) -> pd.DataFrame:
+        perturbation_std: float = None,
+        dropna: bool = True) -> pd.DataFrame:
     # calculate standard deviation of the input variable
     input_std = np.nanstd(input_df[input_variable])
 
@@ -39,13 +64,19 @@ def perturbed_run(
     unperturbed_output = repeat_rows(unperturbed_output_df, n)[output_variable]
     # generate input perturbation
     input_perturbation = np.concatenate([perturbation_process(0, perturbation_std, n) for i in range(len(input_df))])
-    input_perturbation_std = input_perturbation / input_std
+    
+    # input_perturbation_std = input_perturbation / input_std
+    
     # copy input for perturbation
     perturbed_input_df = input_df.copy()
     # repeat input for perturbation
     perturbed_input_df = repeat_rows(perturbed_input_df, n)
     # extract input variable from repeated unperturbed input
     unperturbed_input = perturbed_input_df[input_variable]
+
+    # normalize input perturbations
+    input_perturbation_std = normalization_function(input_perturbation, unperturbed_input)
+
     # add perturbation to input
     perturbed_input_df[input_variable] = perturbed_input_df[input_variable] + input_perturbation
     # extract perturbed input
@@ -56,12 +87,13 @@ def perturbed_run(
     perturbed_output = perturbed_output_df[output_variable]
     # calculate output perturbation
     output_perturbation = perturbed_output - unperturbed_output
-    output_perturbation_std = output_perturbation / output_std
 
-    # FIXME make tower and time_solar conditional on input dataframe
+    # output_perturbation_std = output_perturbation / output_std
+
+    # normalize output perturbations
+    output_perturbation_std = normalization_function(output_perturbation, unperturbed_output)
+
     results_df = pd.DataFrame({
-        # "tower": perturbed_input_df.tower,
-        # "time_solar": perturbed_input_df.time_solar,
         "input_variable": input_variable,
         "output_variable": output_variable,
         "input_unperturbed": unperturbed_input,
@@ -74,6 +106,9 @@ def perturbed_run(
         "output_perturbed": perturbed_output, 
     })
 
+    if dropna:
+        results_df = results_df.dropna()
+
     return results_df
 
 def sensitivity_analysis(
@@ -82,9 +117,17 @@ def sensitivity_analysis(
         output_variables: str, 
         forward_process: Callable,
         perturbation_process: Callable = np.random.normal,
+        normalization_function: Callable = default_normalization_function,
         n: int = 100, 
         perturbation_mean: float = 0,
         perturbation_std: float = None) -> Tuple[pd.DataFrame, Dict]:
+    # print(len(input_df))
+
+    for input_variable in input_variables:
+        input_df = input_df[~np.isnan(input_df[input_variable])]
+
+    # print(len(input_df))
+
     sensitivity_metrics_columns = ["input_variable", "output_variable", "metric", "value"]
     sensitivity_metrics_df = pd.DataFrame({}, columns=sensitivity_metrics_columns)
 
@@ -111,14 +154,27 @@ def sensitivity_analysis(
                 perturbation_process=perturbation_process,
                 n=n,
                 perturbation_mean=perturbation_mean,
-                perturbation_std=perturbation_std
+                perturbation_std=perturbation_std,
+                normalization_function=normalization_function
             )
 
             perturbation_df = pd.concat([perturbation_df, run_results])
             input_perturbation_std = np.array(run_results[(run_results.input_variable == input_variable) & (run_results.output_variable == output_variable)].input_perturbation_std).astype(np.float32)
             output_perturbation_std = np.array(run_results[(run_results.output_variable == output_variable) & (run_results.output_variable == output_variable)].output_perturbation_std).astype(np.float32)
-            # correlation = np.corrcoef(input_perturbation_std, output_perturbation_std)[0][1]
-            correlation = scipy.stats.pearsonr(input_perturbation_std, output_perturbation_std)[0]
+            # correlation = np.corrcoef(input_perturbation_std, output_perturbation_std)[0][1]     
+            variable_perturbation_df = pd.DataFrame({"input_perturbation_std": input_perturbation_std, "output_perturbation_std": output_perturbation_std})
+            # print(len(variable_perturbation_df))
+            variable_perturbation_df = variable_perturbation_df.dropna()
+            # print(len(variable_perturbation_df))
+            input_perturbation_std = variable_perturbation_df.input_perturbation_std
+            output_perturbation_std = variable_perturbation_df.output_perturbation_std     
+            # print(f"measuring correlation for input variable {input_variable} output variable {output_variable} with {len(output_perturbation_std)} perturbations")  
+            # print("input_perturbation_std")
+            # print(input_perturbation_std)
+            # print("output_perturbation_std")
+            # print(output_perturbation_std)
+            correlation = mstats.pearsonr(input_perturbation_std, output_perturbation_std)[0]
+            # print(f"correlation: {correlation}")  
             
             sensitivity_metrics_df = pd.concat([sensitivity_metrics_df, pd.DataFrame([[
                 input_variable, 
@@ -134,6 +190,15 @@ def sensitivity_analysis(
                 output_variable, 
                 "r2", 
                 r2
+            ]], columns=sensitivity_metrics_columns)])
+
+            mean_normalized_change = np.nanmean(output_perturbation_std)
+
+            sensitivity_metrics_df = pd.concat([sensitivity_metrics_df, pd.DataFrame([[
+                input_variable, 
+                output_variable, 
+                "mean_normalized_change", 
+                mean_normalized_change
             ]], columns=sensitivity_metrics_columns)])
 
     return perturbation_df, sensitivity_metrics_df

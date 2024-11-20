@@ -82,7 +82,7 @@ def process_STIC_array(
         LAI = LAI_from_NDVI(NDVI)
 
     # saturation air pressure in hPa
-    SVP_hPa = 6.13753 * (rt.exp((17.27 * Ta_C) / (Ta_C + 237.3)))
+    SVP_hPa = 6.13753 * (np.exp((17.27 * Ta_C) / (Ta_C + 237.3)))
 
     # calculate delta term if it's not given
     if delta_hPa is None:
@@ -105,7 +105,7 @@ def process_STIC_array(
     dTS_C = ST_C - Ta_C
 
     # saturation vapor pressure at surface temperature (hPa/K)
-    Estar_hPa = 6.13753 * rt.exp((17.27 * ST_C) / (ST_C + 237.3))
+    Estar_hPa = 6.13753 * np.exp((17.27 * ST_C) / (ST_C + 237.3))
 
     if Rg_Wm2 is None:
         if G is None and SM is None:
