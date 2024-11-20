@@ -2,6 +2,7 @@ from typing import Callable, Dict, Tuple
 import numpy as np
 import pandas as pd
 import scipy
+from scipy.stats import mstats
 
 def repeat_rows(df: pd.DataFrame, n: int) -> pd.DataFrame:
     return pd.DataFrame(np.repeat(df.values, n, axis=0), columns=df.columns)
@@ -85,6 +86,13 @@ def sensitivity_analysis(
         n: int = 100, 
         perturbation_mean: float = 0,
         perturbation_std: float = None) -> Tuple[pd.DataFrame, Dict]:
+    print(len(input_df))
+
+    for input_variable in input_variables:
+        input_df = input_df[~np.isnan(input_df[input_variable])]
+
+    print(len(input_df))
+
     sensitivity_metrics_columns = ["input_variable", "output_variable", "metric", "value"]
     sensitivity_metrics_df = pd.DataFrame({}, columns=sensitivity_metrics_columns)
 
@@ -117,8 +125,20 @@ def sensitivity_analysis(
             perturbation_df = pd.concat([perturbation_df, run_results])
             input_perturbation_std = np.array(run_results[(run_results.input_variable == input_variable) & (run_results.output_variable == output_variable)].input_perturbation_std).astype(np.float32)
             output_perturbation_std = np.array(run_results[(run_results.output_variable == output_variable) & (run_results.output_variable == output_variable)].output_perturbation_std).astype(np.float32)
-            # correlation = np.corrcoef(input_perturbation_std, output_perturbation_std)[0][1]
-            correlation = scipy.stats.pearsonr(input_perturbation_std, output_perturbation_std)[0]
+            # correlation = np.corrcoef(input_perturbation_std, output_perturbation_std)[0][1]     
+            variable_perturbation_df = pd.DataFrame({"input_perturbation_std": input_perturbation_std, "output_perturbation_std": output_perturbation_std})
+            # print(len(variable_perturbation_df))
+            variable_perturbation_df = variable_perturbation_df.dropna()
+            # print(len(variable_perturbation_df))
+            input_perturbation_std = variable_perturbation_df.input_perturbation_std
+            output_perturbation_std = variable_perturbation_df.output_perturbation_std     
+            print(f"measuring correlation for input variable {input_variable} output variable {output_variable} with {len(output_perturbation_std)} perturbations")  
+            print("input_perturbation_std")
+            print(input_perturbation_std)
+            print("output_perturbation_std")
+            print(output_perturbation_std)
+            correlation = mstats.pearsonr(input_perturbation_std, output_perturbation_std)[0]
+            print(f"correlation: {correlation}")
             
             sensitivity_metrics_df = pd.concat([sensitivity_metrics_df, pd.DataFrame([[
                 input_variable, 
