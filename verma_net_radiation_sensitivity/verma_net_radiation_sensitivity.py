@@ -7,7 +7,7 @@ from verma_net_radiation import process_verma_net_radiation
 def process_verma_net_radiation_table(verma_net_radiation_inputs_df: DataFrame) -> DataFrame:
     SWin = np.array(verma_net_radiation_inputs_df.Rg)
     albedo = np.array(verma_net_radiation_inputs_df.albedo)
-    ST_C = np.array(verma_net_radiation_inputs_df.LST - 273.15)
+    ST_C = np.array(verma_net_radiation_inputs_df.ST_C)
     emissivity = np.array(verma_net_radiation_inputs_df.EmisWB)
     Ta_C = np.array(verma_net_radiation_inputs_df.Ta_C)
     RH = np.array(verma_net_radiation_inputs_df.RH)
